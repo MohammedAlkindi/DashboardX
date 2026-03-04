@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DashboardX — AI Data Intelligence</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+  <!-- Topbar -->
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">DX</div>
+      <span class="brand-name">DashboardX</span>
+      <span class="brand-tag">Beta</span>
+    </div>
+    <span style="font-size:12px;color:var(--text-3);font-family:'DM Mono',monospace;">Part of the X Network</span>
+  </nav>
+
+  <main class="main">
+
+    <!-- Upload Screen -->
+    <div id="uploadScreen" class="upload-section animate">
+      <h1 class="upload-headline">Turn your spreadsheet<br>into intelligence.</h1>
+      <p class="upload-sub">Upload any Excel file. DashboardX reads it, explains it, and visualizes it — powered by Claude.</p>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
+        <span class="dropzone-icon">📊</span>
+        <div class="dropzone-title">Drop your Excel file here</div>
+        <div class="dropzone-sub">.xlsx, .xls, or .csv — up to 10MB</div>
+        <div id="fileNameDisplay" class="dropzone-filename" style="display:none;"></div>
+      </div>
+
+      <div class="question-input-wrap">
+        <input
+          id="questionInput"
+          class="question-input"
+          type="text"
+          placeholder="Optional: Ask a specific question about your data..."
+        />
+      </div>
+
+      <button id="analyzeBtn" class="analyze-btn" disabled>Analyze with Claude →</button>
+      <div id="errorBox" class="error-box" style="display:none;"></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="display:none;">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-steps">
+          <div class="loading-step active" id="step1">PARSING SPREADSHEET</div>
+          <div class="loading-step" id="step2">COMPUTING STATISTICS</div>
+          <div class="loading-step" id="step3">RUNNING AI ANALYSIS</div>
+          <div class="loading-step" id="step4">BUILDING DASHBOARD</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" style="display:none;">
+      <div class="dashboard">
+
+        <!-- Top bar -->
+        <div class="dash-topbar animate">
+          <div>
+            <div class="dash-title" id="dashTitle">Analysis Complete</div>
+            <div class="dash-meta" id="dashMeta"></div>
+          </div>
+          <button class="reset-btn" id="resetBtn">← New File</button>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-card animate animate-delay-1">
+          <div class="summary-label">Dataset Summary</div>
+          <div class="summary-text" id="summaryText"></div>
+        </div>
+
+        <!-- Insights + Variables -->
+        <div class="grid-2 animate animate-delay-2">
+          <div class="card">
+            <div class="card-title">Key Insights</div>
+            <div class="insights-list" id="insightsList"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Variable Explanations</div>
+            <div class="var-list" id="varList"></div>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card animate animate-delay-3">
+          <div class="card-title">Statistical Summary</div>
+          <div class="stat-grid" id="statGrid"></div>
+        </div>
+
+        <!-- Charts -->
+        <div id="chartsSection">
+          <div class="card-title" style="margin-bottom:16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Charts</div>
+          <div class="charts-grid" id="chartsGrid"></div>
+        </div>
+
+        <!-- Correlations -->
+        <div id="corrSection" style="display:none;">
+          <div class="card">
+            <div class="card-title">Correlations</div>
+            <div class="corr-list" id="corrList"></div>
+          </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="conclusion-card animate animate-delay-4">
+          <div class="conclusion-label">Analytical Conclusion</div>
+          <div class="conclusion-text" id="conclusionText"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
