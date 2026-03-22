@@ -1,8 +1,8 @@
-# AnalyzeX
+# DashboardX
 
-AnalyzeX is an AI-powered data analysis engine that converts raw datasets into structured insights, visualizations, and explanations in seconds.
+DashboardX is an AI-powered data analysis engine that converts raw datasets into structured insights, visualizations, and explanations in seconds.
 
-Users upload a dataset (Excel, CSV, or other structured files), and AnalyzeX automatically performs statistical analysis, detects correlations, and generates a clear analytical report using large language models.
+Users upload a dataset (Excel, CSV, or other structured files), and DashboardX automatically performs statistical analysis, detects correlations, and generates a clear analytical report using large language models.
 
 The goal is simple: reduce the friction between **data and understanding**.
 
@@ -106,7 +106,7 @@ http://localhost:3000
 
 ## Current Capabilities
 
-AnalyzeX currently supports:
+DashboardX currently supports:
 
 - Excel dataset uploads
 - Automatic statistical summaries
@@ -119,7 +119,7 @@ AnalyzeX currently supports:
 
 Modern data tools require users to manually build dashboards and interpret charts.
 
-AnalyzeX aims to replace that workflow with a simple interaction:
+DashboardX aims to replace that workflow with a simple interaction:
 
 **Upload data → receive clear insight.**
 

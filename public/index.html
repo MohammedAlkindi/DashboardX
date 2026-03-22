@@ -10,7 +10,6 @@
 <body>
 <div class="app">
 
-  <!-- Topbar -->
   <nav class="topbar">
     <div class="topbar-brand">
       <div class="brand-mark">DX</div>
@@ -24,24 +23,30 @@
 
     <!-- Upload Screen -->
     <div id="uploadScreen" class="upload-section animate">
-      <h1 class="upload-headline">Turn your spreadsheet<br>into intelligence.</h1>
-      <p class="upload-sub">Upload any Excel file. DashboardX reads it, explains it, and visualizes it — powered by Claude.</p>
+      <h1 class="upload-headline">Turn any file<br>into intelligence.</h1>
+      <p class="upload-sub">Upload up to 10 files at once — Excel, CSV, JSON, PDF, PowerPoint, Word, or text. Each file is analyzed individually, then synthesized together.</p>
+
+      <div class="file-type-pills">
+        <span class="pill">📊 Excel</span>
+        <span class="pill">📋 CSV</span>
+        <span class="pill">🗂️ JSON</span>
+        <span class="pill">📄 PDF</span>
+        <span class="pill">📑 PowerPoint</span>
+        <span class="pill">📝 Word</span>
+        <span class="pill">🔤 Text</span>
+      </div>
 
       <div class="dropzone" id="dropzone">
-        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
-        <span class="dropzone-icon">📊</span>
-        <div class="dropzone-title">Drop your Excel file here</div>
-        <div class="dropzone-sub">.xlsx, .xls, or .csv — up to 10MB</div>
-        <div id="fileNameDisplay" class="dropzone-filename" style="display:none;"></div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.json,.txt,.md,.pdf,.pptx,.ppt,.docx,.doc" multiple />
+        <span class="dropzone-icon" id="dropzoneIcon">📁</span>
+        <div class="dropzone-title">Drop files here or click to browse</div>
+        <div class="dropzone-sub">Up to 10 files · 25MB each</div>
+        <div id="fileList" class="file-list" style="display:none;"></div>
       </div>
 
       <div class="question-input-wrap">
-        <input
-          id="questionInput"
-          class="question-input"
-          type="text"
-          placeholder="Optional: Ask a specific question about your data..."
-        />
+        <input id="questionInput" class="question-input" type="text"
+          placeholder="Optional: Ask a question about your files..." />
       </div>
 
       <button id="analyzeBtn" class="analyze-btn" disabled>Analyze with Claude →</button>
@@ -53,11 +58,12 @@
       <div class="loading-wrap">
         <div class="spinner"></div>
         <div class="loading-steps">
-          <div class="loading-step active" id="step1">PARSING SPREADSHEET</div>
-          <div class="loading-step" id="step2">COMPUTING STATISTICS</div>
+          <div class="loading-step active" id="step1">PARSING FILES</div>
+          <div class="loading-step" id="step2">EXTRACTING CONTENT</div>
           <div class="loading-step" id="step3">RUNNING AI ANALYSIS</div>
           <div class="loading-step" id="step4">BUILDING DASHBOARD</div>
         </div>
+        <div id="loadingFileCount" style="font-size:12px;color:var(--text-3);font-family:'DM Mono',monospace;margin-top:8px;"></div>
       </div>
     </div>
 
@@ -65,57 +71,83 @@
     <div id="dashboardScreen" style="display:none;">
       <div class="dashboard">
 
-        <!-- Top bar -->
         <div class="dash-topbar animate">
           <div>
             <div class="dash-title" id="dashTitle">Analysis Complete</div>
             <div class="dash-meta" id="dashMeta"></div>
           </div>
-          <button class="reset-btn" id="resetBtn">← New File</button>
+          <button class="reset-btn" id="resetBtn">← New Files</button>
         </div>
 
-        <!-- Summary -->
-        <div class="summary-card animate animate-delay-1">
-          <div class="summary-label">Dataset Summary</div>
-          <div class="summary-text" id="summaryText"></div>
-        </div>
-
-        <!-- Insights + Variables -->
-        <div class="grid-2 animate animate-delay-2">
-          <div class="card">
-            <div class="card-title">Key Insights</div>
-            <div class="insights-list" id="insightsList"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">Variable Explanations</div>
-            <div class="var-list" id="varList"></div>
+        <!-- Cross-file summary (multi-file only) -->
+        <div id="crossSummarySection" style="display:none;" class="animate animate-delay-1">
+          <div class="cross-summary-card">
+            <div class="cross-summary-label">🔗 Cross-File Synthesis</div>
+            <div class="cross-summary-text" id="crossSummaryText"></div>
+            <div class="cross-grid" id="crossGrid"></div>
+            <div id="crossInsights"></div>
+            <div class="cross-conclusion" id="crossConclusion"></div>
           </div>
         </div>
 
-        <!-- Statistics -->
-        <div class="card animate animate-delay-3">
-          <div class="card-title">Statistical Summary</div>
-          <div class="stat-grid" id="statGrid"></div>
+        <!-- File tabs (multi-file) -->
+        <div id="fileTabs" style="display:none;" class="animate animate-delay-2">
+          <div class="tabs-bar" id="tabsBar"></div>
         </div>
 
-        <!-- Charts -->
-        <div id="chartsSection">
-          <div class="card-title" style="margin-bottom:16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Charts</div>
-          <div class="charts-grid" id="chartsGrid"></div>
-        </div>
+        <!-- Per-file dashboard -->
+        <div id="fileDashboard">
 
-        <!-- Correlations -->
-        <div id="corrSection" style="display:none;">
-          <div class="card">
-            <div class="card-title">Correlations</div>
-            <div class="corr-list" id="corrList"></div>
+          <div class="summary-card animate animate-delay-2">
+            <div class="summary-label">File Summary</div>
+            <div class="summary-text" id="summaryText"></div>
           </div>
-        </div>
 
-        <!-- Conclusion -->
-        <div class="conclusion-card animate animate-delay-4">
-          <div class="conclusion-label">Analytical Conclusion</div>
-          <div class="conclusion-text" id="conclusionText"></div>
+          <div id="topicsSection" style="display:none;" class="animate animate-delay-2">
+            <div class="card">
+              <div class="card-title">Key Topics</div>
+              <div class="topics-list" id="topicsList"></div>
+            </div>
+          </div>
+
+          <div class="grid-2 animate animate-delay-3">
+            <div class="card">
+              <div class="card-title">Key Insights</div>
+              <div class="insights-list" id="insightsList"></div>
+            </div>
+            <div class="card">
+              <div class="card-title" id="varListTitle">Variable Explanations</div>
+              <div class="var-list" id="varList"></div>
+            </div>
+          </div>
+
+          <div id="statsSection" class="card animate animate-delay-3">
+            <div class="card-title">Statistical Summary</div>
+            <div class="stat-grid" id="statGrid"></div>
+          </div>
+
+          <div id="rawTextSection" style="display:none;" class="card animate animate-delay-3">
+            <div class="card-title">Content Preview</div>
+            <pre class="raw-text-preview" id="rawTextPreview"></pre>
+          </div>
+
+          <div id="chartsSection">
+            <div class="card-title" style="margin-bottom:16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);">Charts</div>
+            <div class="charts-grid" id="chartsGrid"></div>
+          </div>
+
+          <div id="corrSection" style="display:none;">
+            <div class="card">
+              <div class="card-title">Correlations</div>
+              <div class="corr-list" id="corrList"></div>
+            </div>
+          </div>
+
+          <div class="conclusion-card animate animate-delay-4">
+            <div class="conclusion-label">Analytical Conclusion</div>
+            <div class="conclusion-text" id="conclusionText"></div>
+          </div>
+
         </div>
 
       </div>
